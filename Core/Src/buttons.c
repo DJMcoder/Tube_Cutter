@@ -6,11 +6,13 @@
  */
 #include "main.h"
 #include "buttons.h"
+#include "cutter.h"
+#include "main.h"
 
 #define BUTTON_TIMER &htim3
 #define NUM_BUTTONS 3
 Button buttons[] = {
-		{ Port: STEPPER_DOWN_GPIO_Port, Pin: STEPPER_DOWN_Pin}
+		{ Port: STEPPER_DOWN_GPIO_Port, Pin: STEPPER_DOWN_Pin},
 		{ Port: STEPPER_UP_GPIO_Port,  Pin: STEPPER_UP_Pin},
 		{ Port: B1_GPIO_Port, Pin: B1_Pin}
 };
@@ -18,16 +20,16 @@ Button buttons[] = {
 void Debounce_Buttons() {
 	static GPIO_PinState last_state[NUM_BUTTONS] = { GPIO_PIN_RESET };
 	HAL_TIM_Base_Stop_IT(BUTTON_TIMER);
-	for (int button = 0; button < NUM_BUTTONS; buttons++) {
+	for (uint8_t button = 0; button < NUM_BUTTONS; button++) {
 		GPIO_PinState new_state = HAL_GPIO_ReadPin(buttons[button].Port, buttons[button].Pin);
 		if(new_state != last_state[button]){
-			Button_Debounced(buttons[button][1], new_state);
+			Button_Debounced(buttons[button].Pin, new_state);
 			last_state[button] = new_state;
 		}
 	}
 }
 
-void Button_Debounced() {
+void Button_Debounced(uint16_t Pin, GPIO_PinState state) {
 	static uint8_t button_state = 0;
 
 	switch (button_state) {
