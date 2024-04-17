@@ -1,0 +1,7 @@
+../Core/Src/cutter.c:31:6:PCNC_Final_State	8	static,ignoring_inline_asm
+../Core/Src/cutter.c:77:6:PCNC_Rotate_To_X	24	static
+../Core/Src/cutter.c:147:6:PCNC_Translate_To_Y	8	static
+../Core/Src/cutter.c:42:6:PCNC_Execute_Next_Instruction	16	static
+../Core/Src/cutter.c:63:6:PCNC_Servo_Unlock	8	static
+../Core/Src/cutter.c:104:6:PCNC_Stepper_ISR	16	static
+../Core/Src/cutter.c:158:20:PCNC_Get_Setup	16	static
