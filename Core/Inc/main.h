@@ -67,8 +67,6 @@ void Error_Handler(void);
 #define STEP_PULSE_GPIO_Port GPIOE
 #define STEP_DIR_Pin GPIO_PIN_6
 #define STEP_DIR_GPIO_Port GPIOE
-#define SERVO_PWM_Pin GPIO_PIN_13
-#define SERVO_PWM_GPIO_Port GPIOC
 #define PC14_OSC32_IN_Pin GPIO_PIN_14
 #define PC14_OSC32_IN_GPIO_Port GPIOC
 #define PC15_OSC32_OUT_Pin GPIO_PIN_15
@@ -100,10 +98,6 @@ void Error_Handler(void);
 #define SWDIO_GPIO_Port GPIOA
 #define SWCLK_Pin GPIO_PIN_14
 #define SWCLK_GPIO_Port GPIOA
-#define Audio_RST_Pin GPIO_PIN_4
-#define Audio_RST_GPIO_Port GPIOD
-#define OTG_FS_OverCurrent_Pin GPIO_PIN_5
-#define OTG_FS_OverCurrent_GPIO_Port GPIOD
 
 /* USER CODE BEGIN Private defines */
 
