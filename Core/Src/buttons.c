@@ -30,30 +30,51 @@ void Debounce_Buttons() {
 }
 
 void Button_Debounced(uint16_t Pin, GPIO_PinState state) {
-	static uint8_t button_state = 0;
+	static uint8_t button_stage = 0;
 
-	switch (button_state) {
+	switch (button_stage) {
 		case 0:
-			HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
-			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
-			PCNC_Go_To_Origin(cutter);
+			if (Pin == B1_Pin) {
+				HAL_GPIO_WritePin(LD6_GPIO_Port, LD6_Pin, GPIO_PIN_RESET);
+				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_SET);
+				PCNC_Go_To_Origin(cutter);
+			}
 			break;
 		case 1:
-			HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
-			PCNC_Begin_Cut(cutter);
+			if (Pin == B1_Pin) {
+				HAL_GPIO_WritePin(LD3_GPIO_Port, LD3_Pin, GPIO_PIN_RESET);
+				PCNC_Begin_Cut(cutter);
+			}
+			else if (Pin == STEPPER_DOWN_Pin) {
+				if (state == GPIO_PIN_SET) {
+					PCNC_Manual_Move_Y(cutter, 1);
+				}
+				else {
+					PCNC_Manual_Move_Y(cutter, 0);
+				}
+			}
+			else if (Pin == STEPPER_UP_Pin) {
+				if (state == GPIO_PIN_SET) {
+					PCNC_Manual_Move_Y(cutter, -1);
+				}
+				else {
+					PCNC_Manual_Move_Y(cutter, 0);
+				}
+			}
 			break;
 		default:
 			__NOP();
 			break;
 	}
-
-	button_state++;
+	if (Pin == B1_Pin && state == GPIO_PIN_RESET) {
+		button_stage++;
+	}
 }
 
 void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin)
 {
-	__HAL_TIM_SET_COUNTER(&htim3, 0);
-	HAL_TIM_Base_Start_IT(&htim3);
+	__HAL_TIM_SET_COUNTER(BUTTON_TIMER, 0);
+	HAL_TIM_Base_Start_IT(BUTTON_TIMER);
 }
 
 

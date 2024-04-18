@@ -143,7 +143,22 @@ void PCNC_Rotate_To_X(struct PCNC_Setup *setup, double x){
  * @param setup the configuration of the stepper motor
  */
 void PCNC_Stepper_ISR(struct PCNC_Setup *setup) {
-	int32_t step_diff = setup->Stepper->target_steps - setup->Stepper->current_steps;
+	int32_t step_diff;
+	if (setup->Stepper->manual_move == 0) {
+		step_diff = setup->Stepper->target_steps - setup->Stepper->current_steps;
+	}
+	else {
+		step_diff = setup->Stepper->manual_move;
+	}
+
+	if (setup->Stepper->manual_move != 0 &&
+		HAL_GPIO_ReadPin(setup->Stepper->Move_Down_Port, setup->Stepper->Move_Down_Pin) != GPIO_PIN_SET &&
+		HAL_GPIO_ReadPin(setup->Stepper->Move_Up_Port, setup->Stepper->Move_Up_Pin) != GPIO_PIN_SET	) {
+			HAL_TIM_Base_Stop_IT(setup->Stepper->htim);
+			setup->Stepper->Lock = 0;
+			setup->Stepper->manual_move = 0;
+			return;
+	}
 
 	// if we are at the target, don't move
 	if (step_diff == 0) {
@@ -169,8 +184,9 @@ void PCNC_Stepper_ISR(struct PCNC_Setup *setup) {
 	// toggle the pulse pin
 	HAL_GPIO_TogglePin(setup->Stepper->Pulse_Port, setup->Stepper->Pulse_Pin);
 
-	// if we finished the pulse, record the step
-	if (HAL_GPIO_ReadPin(setup->Stepper->Pulse_Port, setup->Stepper->Pulse_Pin) == GPIO_PIN_SET) {
+	// if we finished the pulse, and we are not in manual mode, record the step
+	if (HAL_GPIO_ReadPin(setup->Stepper->Pulse_Port, setup->Stepper->Pulse_Pin) == GPIO_PIN_SET &&
+			setup->Stepper->manual_move == 0) {
 		if (cur_dir == GPIO_PIN_SET) {
 			setup->Stepper->current_steps++;
 		}
@@ -178,6 +194,15 @@ void PCNC_Stepper_ISR(struct PCNC_Setup *setup) {
 			setup->Stepper->current_steps--;
 		}
 	}
+}
+
+/**
+ * Manually move the tube up or down
+ */
+void PCNC_Manual_Move_Y(struct PCNC_Setup *setup, int8_t dir) {
+	setup->Stepper->Lock = 1;
+	setup->Stepper->manual_move = dir;
+	HAL_TIM_Base_Start_IT(setup->Stepper->htim);
 }
 
 /**
@@ -231,8 +256,13 @@ struct PCNC_Setup* PCNC_Get_Setup() {
 	setup->Stepper->Lock			= 0;
 	setup->Stepper->Dir_Pin		= Dir_Pin;
 	setup->Stepper->Dir_Port  	= Dir_Port;
+	setup->Stepper->Move_Down_Pin = Move_Down_Pin;
+	setup->Stepper->Move_Down_Port = Move_Down_Port;
+	setup->Stepper->Move_Up_Pin = Move_Up_Pin;
+	setup->Stepper->Move_Up_Port = Move_Up_Port;
 	setup->Stepper->current_steps 	= 0;
 	setup->Stepper->target_steps 	= 0;
+	setup->Stepper->manual_move 	= 0;
 	setup->Stepper->htim			= step_htim;
 	setup->Stepper->steps_to_inches = steps_to_inches;
 

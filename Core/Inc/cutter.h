@@ -65,6 +65,9 @@ struct PCNC_Stepper_Setup {
 	/* Rotational step position that the stepper will move to */
 	volatile int32_t target_steps;
 
+	/* -1 if manually moving down, 1 if manually moving up, 0 otherwise */
+	volatile int8_t manual_move;
+
 	/* Number of inches that one rotational step translates the tube */
 	double steps_to_inches;
 
@@ -81,6 +84,14 @@ struct PCNC_Stepper_Setup {
 	/* Pin for setting stepper direction */
 	uint16_t 		Dir_Pin;
 	GPIO_TypeDef *Dir_Port;
+
+	/* Pin for moving up */
+	uint16_t 		Move_Up_Pin;
+	GPIO_TypeDef *Move_Up_Port;
+
+	/* Pin for moving up */
+	uint16_t 		Move_Down_Pin;
+	GPIO_TypeDef *Move_Down_Port;
 };
 
 void PCNC_Final_State(struct PCNC_Setup *setup);
@@ -91,5 +102,6 @@ void PCNC_Execute_Next_Instruction(struct PCNC_Setup *setup);
 void PCNC_Servo_Unlock(struct PCNC_Setup *setup);
 void PCNC_Rotate_To_X(struct PCNC_Setup *setup, double x);
 void PCNC_Stepper_ISR(struct PCNC_Setup *setup);
+void PCNC_Manual_Move_Y(struct PCNC_Setup *setup, int8_t dir);
 void PCNC_Translate_To_Y(struct PCNC_Setup *setup, double y);
 struct PCNC_Setup* PCNC_Get_Setup();

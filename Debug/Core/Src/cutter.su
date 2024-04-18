@@ -7,5 +7,6 @@
 ../Core/Src/cutter.c:92:6:PCNC_Servo_Unlock	16	static
 ../Core/Src/cutter.c:106:6:PCNC_Rotate_To_X	56	static
 ../Core/Src/cutter.c:145:6:PCNC_Stepper_ISR	24	static
-../Core/Src/cutter.c:190:6:PCNC_Translate_To_Y	40	static
-../Core/Src/cutter.c:203:20:PCNC_Get_Setup	24	static
+../Core/Src/cutter.c:202:6:PCNC_Manual_Move_Y	16	static
+../Core/Src/cutter.c:215:6:PCNC_Translate_To_Y	40	static
+../Core/Src/cutter.c:228:20:PCNC_Get_Setup	24	static

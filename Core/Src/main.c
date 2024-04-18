@@ -22,6 +22,7 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "cutter.h"
+#include "buttons.h"
 #include "cut_code.h"
 /* USER CODE END Includes */
 
@@ -468,7 +469,7 @@ static void MX_GPIO_Init(void)
   /*Configure GPIO pins : STEPPER_DOWN_Pin STEPPER_UP_Pin */
   GPIO_InitStruct.Pin = STEPPER_DOWN_Pin|STEPPER_UP_Pin;
   GPIO_InitStruct.Mode = GPIO_MODE_IT_RISING;
-  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  GPIO_InitStruct.Pull = GPIO_PULLDOWN;
   HAL_GPIO_Init(GPIOC, &GPIO_InitStruct);
 
   /*Configure GPIO pin : OTG_FS_OverCurrent_Pin */
@@ -501,15 +502,7 @@ void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim)
 	  PCNC_Stepper_ISR(cutter);
   }
   else if (htim == &htim3) {
-	  static GPIO_PinState last_state = GPIO_PIN_RESET;
-	  GPIO_PinState new_state = HAL_GPIO_ReadPin(B1_GPIO_Port, B1_Pin);
-	  if(new_state != last_state){
-	  		HAL_TIM_Base_Stop_IT(&htim3);
-	  		if (new_state == GPIO_PIN_SET) {
-	  			Button_Debounced();
-	  		}
-	  		last_state = new_state;
-	  	}
+	  Debounce_Buttons();
   }
   else if (htim == &htim7) {
 	  HAL_GPIO_TogglePin(LD5_GPIO_Port, LD5_Pin);
